@@ -35,7 +35,7 @@ public class OMBinary extends OpenMathBase {
 	//=== Constructors ===
     /**
      * construct <tt>&lt;OMB&gt; value &lt;/OMB&gt;</tt>
-	 *@param val The value of the OMBinary as byte array
+	 *@param value The value of the OMBinary as byte array
      */
 	public OMBinary(byte[] value) {
 		this.byteValue = value;
