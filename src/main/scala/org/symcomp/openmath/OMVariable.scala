@@ -18,45 +18,17 @@
 
 package org.symcomp.openmath;
 
-import java.util.Map;
-import java.util.List;
-import java.io.PrintStream;
-
 /**
- * Representing the OpenMath object node <tt>&lt;OMOBJ&gt;</tt>
+ * Representing the OpenMath variable node <tt>&lt;OMV ... /&gt;</tt>
  */
-public class OMObject extends OpenMathBase {
+case class OMVariable(name:String) extends OpenMathBase {
 
-	//=== Attributes ===
-	private OpenMathBase element;
+    def getName():String = name
 
-    /**
-     * construct <tt>&lt;OMOBJ&gt element /&lt;/OMOBJ&gt;</tt>
-     */
-	public OMObject(OpenMathBase element) {
-		this.element = element;
-	}
-
-    public OpenMathBase getElement() {
-        return element;
+ 	override def equals(that:Any):Boolean = {
+        if (!that.isInstanceOf[OMVariable]) return false;
+        val v = that.asInstanceOf[OMVariable];
+        this.sameAttributes(v) && (this.name == v.name);
     }
-
-    public void setElement(OpenMathBase element) {
-        this.element = element;
-    }
-
-    //=== Methods ===
-
-    public boolean equals(Object that) {
- 		if(that.getClass() != OMObject.class) return false;
- 	   	return (this.element.equals(((OMObject) that).getElement()));
- 	}
-
-    // traversing
-
-    public void traverse(OpenMathVisitor visitor) {
-        element = visitor.visit(element);
-        element.traverse(visitor);
-    }    
 
 }

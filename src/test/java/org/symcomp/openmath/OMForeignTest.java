@@ -77,7 +77,7 @@ public class OMForeignTest {
 	public void testOMForeignBinaryEnc() throws Exception {
 		OpenMathBase b1 = OpenMathBase.parse("1 + 2 + `xhtml strict 1.0<a><b>muff</b></a><c/>`:xx + 3:yy");
 		char[] c = b1.toBinary();
-		OpenMathBase b2 = OpenMathBase.parseBinary(new String(c));
+		OpenMathBase b2 = OpenMathBase.parseBinary(new String(c)).deOMObject();
 		
 		assert b1.equals(b2);
 	}

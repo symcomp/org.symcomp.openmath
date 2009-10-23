@@ -1,5 +1,5 @@
 //---------------------------------------------------------------------------
-//  Copyright 2006-2009 
+//  Copyright 2006-2009
 //    Dan Roozemond, d.a.roozemond@tue.nl, (TU Eindhoven, Netherlands)
 //    Peter Horn, horn@math.uni-kassel.de (University Kassel, Germany)
 //
@@ -16,41 +16,22 @@
 //  limitations under the License.
 //---------------------------------------------------------------------------
 
-package org.symcomp.openmath;
+package org.symcomp.openmath
 
-import java.util.Map;
-import java.io.PrintStream;
+case class OMForeign(content:String, encoding:String) extends OpenMathBase {
 
-/**
- * Representing the OpenMath string node <tt>&lt;OMSTR&gt;</tt> 
- */
-public class OMString extends OpenMathBase {
-	
-	//=== Attributes ===
-	private String value;
+    def this(cont:String) = this(cont, null)
 
-    /**
-     * construct <tt>&lt;OMSTR&gt value /&lt;/OMSTR&gt;</tt>
-     */
-	public OMString(String value) {
-		this.value = value;
-	}
-	
-    public String getValue() {
-        return value;
-    }
+    def getEncoding() = encoding
+    def getContent() = content
 
-    public void setValue(String value) {
-        this.value = value;
-    }
-
-    //=== Methods ===
- 	
- 	public boolean equals(Object that) {
-        if (that.getClass() != OMString.class) return false;
-        OMString s = (OMString) that;
-        return this.sameAttributes(s) && this.value.equals(s.getValue());
-     }
+    override def equals(that:Any):Boolean = {
+        if (!that.isInstanceOf[OMForeign]) return false;
+        val s = that.asInstanceOf[OMForeign];
+		if (!(this.sameAttributes(s))) return false;
+		if (this.encoding == null && s.encoding != null) return false;
+		if (this.encoding != null && !(this.encoding.equals(s.encoding))) return false;
+		this.content.equals(s.content);
+ 	}
 
 }
-	

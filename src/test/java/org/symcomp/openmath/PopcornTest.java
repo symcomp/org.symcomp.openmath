@@ -297,10 +297,10 @@ public class PopcornTest {
 
         public void testEvilNames() throws Exception {
             String[][] tests = {
-                { "<OMS cd=\"a-b\" name=\"a:b:c-12ö3\"/>", "'a-b'.'a:b:c-12ö3'" },
-                { "<OMV name=\"a-b:pö\"/>", "$'a-b:pö'" },
-                { "<OMR href=\"#a-b:pö\"/>", "#'a-b:pö'" },
-                { "<OMI id=\"a-bü.ø.\">3</OMI>", "3:'a-bü.ø.'" }
+                { "<OMS cd=\"a-b\" name=\"a:b:c-12√∂3\"/>", "'a-b'.'a:b:c-12√∂3'" },
+                { "<OMV name=\"a-b:p√∂\"/>", "$'a-b:p√∂'" },
+                { "<OMR href=\"#a-b:p√∂\"/>", "#'a-b:p√∂'" },
+                { "<OMI id=\"a-b√º.√∏.\">3</OMI>", "3:'a-b√º.√∏.'" }
             };
             for (int i=0; i<tests.length; i++) {
                 boolean success = true;
@@ -890,9 +890,9 @@ public class PopcornTest {
         }
 
         public void testUtf8() throws Exception {
-            String s = "<OMV name=\"?\"/>";
+            String s = "<OMV name=\"√º\"/>";
             OpenMathBase om = OpenMathBase.parse(s);
-            assert om.equals(new OMVariable("?"));
+            assert om.equals(new OMVariable("√º"));
             assert s.equals(om.toXml());
         }
 

@@ -52,13 +52,15 @@ public class BinaryRenderer implements BinaryConstants {
 
     public static void render(Writer writer, OpenMathBase om) throws Exception {
         BinaryRenderer r = new BinaryRenderer(writer);
-        r.srender(om);
+		//Binary should always be encapsulated in an OMOBJ
+        r.srender(om.toOMObject());
     }
 
     public static void render(Writer writer, OpenMathBase om, boolean compress) throws Exception {
         BinaryRenderer r = new BinaryRenderer(writer);
+		//Binary should always be encapsulated in an OMOBJ
         r.compress = compress;
-        r.srender(om);
+        r.srender(om.toOMObject());
     }
 
     private void srender(OpenMathBase om) throws Exception {
@@ -66,7 +68,7 @@ public class BinaryRenderer implements BinaryConstants {
         /* Attributions
 
             are encoded using the attribution tags (token identifiers 18 and 19). More precisely,
-            attribution of the object E with (S1, E1), É (Sn, En) pairs (where Si are the attributes) is
+            attribution of the object E with (S1, E1), Ã‰ (Sn, En) pairs (where Si are the attributes) is
             encoded as the attributed object tag (token identifier 18), followed by the encoding of the
             attribute pairs as the attribute pairs tags (token identifier 20), followed by the encoding of
             each symbol and value, followed by the end attribute pairs tag (token identifier 21), followed
@@ -381,7 +383,7 @@ public class BinaryRenderer implements BinaryConstants {
     */
     private void srender(OMFloat omf) throws Exception {
         String id = omf.getId();
-        char[] bts = OMFloat.double2bytes(omf.getDec());
+        char[] bts = omf.getBytes();
         char typ = TYPE_FLOAT;
         if (id != null && id.length()>125)
             typ |= FLAG_LONG;
@@ -583,7 +585,7 @@ public class BinaryRenderer implements BinaryConstants {
     /* Applications
 
         are encoded using the application tags (token identifiers 16 and 17). More precisely, the
-        application of E0 to E1É En is encoded using the application tags (token identifier 16), the
+        application of E0 to E1Ã‰ En is encoded using the application tags (token identifier 16), the
         sequence of the encodings of E0 to En and the end application tags (token identifier 17).
 
         Grammar:
@@ -620,7 +622,7 @@ public class BinaryRenderer implements BinaryConstants {
     /* Errors
 
         are encoded using the error tags (token identifiers 22 and 23). More precisely, S0 applied to
-        E1É En is encoded as the error tag (token identifier 22), the encoding of S0, the sequence of
+        E1Ã‰ En is encoded as the error tag (token identifier 22), the encoding of S0, the sequence of
         the encodings of E0 to En and the end error tag (token identifier 23).
 
         Grammar:
@@ -657,9 +659,9 @@ public class BinaryRenderer implements BinaryConstants {
     /* Bindings
 
         are encoded using the binding tags (token identifiers 26 and 27). More precisely, the binding
-        by B of variables V1É Vn in C is encoded as the binding tag (token identifier 26), followed by
+        by B of variables V1Ã‰ Vn in C is encoded as the binding tag (token identifier 26), followed by
         the encoding of B, followed by the binding variables tags (token identifier 28), followed by
-        the encodings of the variables V1 É Vn, followed by the end binding variables tags (token
+        the encodings of the variables V1 Ã‰ Vn, followed by the end binding variables tags (token
         identifier 29), followed by the encoding of C, followed by the end binding tags (token
         identifier 27).
 

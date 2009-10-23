@@ -35,20 +35,20 @@ public class BinaryEncodingTest implements BinaryConstants {
     public void testSmallInt() throws Exception {
         OMInteger omi = new OMInteger(12);
         char[] s = BinaryRenderer.render(omi);
-        assert s.length == 2;
-        assert s[0] == TYPE_INT_SMALL;
-        assert s[1] == 12;
-        OMInteger omi2 = (OMInteger) BinaryParser.parse(s);
+        assert s.length == 4;
+        assert s[1] == TYPE_INT_SMALL;
+        assert s[2] == 12;
+        OMInteger omi2 = (OMInteger) BinaryParser.parse(s).deOMObject();
         assert omi.equals(omi2);
     }
 
     public void testSmallIntNeg() throws Exception {
         OMInteger omi = new OMInteger(-42);
         char[] s = BinaryRenderer.render(omi);
-        assert s.length == 2;
-        assert s[0] == TYPE_INT_SMALL;
-        assert s[1] == 0xd6;
-        OMInteger omi2 = (OMInteger) BinaryParser.parse(s);
+        assert s.length == 4;
+        assert s[1] == TYPE_INT_SMALL;
+        assert s[2] == 0xd6;
+        OMInteger omi2 = (OMInteger) BinaryParser.parse(s).deOMObject();
         assert omi.equals(omi2);
     }
 
@@ -56,13 +56,13 @@ public class BinaryEncodingTest implements BinaryConstants {
         OMInteger omi = new OMInteger(12);
         omi.setId("Ab");
         char[] s = BinaryRenderer.render(omi);
-        assert s.length == 5;
-        assert s[0] == (TYPE_INT_SMALL | FLAG_ID);
-        assert s[1] == 2;
-        assert s[2] == 12;
-        assert s[3] == 'A';
-        assert s[4] == 'b';
-        OMInteger omi2 = (OMInteger) BinaryParser.parse(s);
+        assert s.length == 7;
+        assert s[1] == (TYPE_INT_SMALL | FLAG_ID);
+        assert s[2] == 2;
+        assert s[3] == 12;
+        assert s[4] == 'A';
+        assert s[5] == 'b';
+        OMInteger omi2 = (OMInteger) BinaryParser.parse(s).deOMObject();
         assert omi.equals(omi2);
     }
 
@@ -71,13 +71,13 @@ public class BinaryEncodingTest implements BinaryConstants {
         OMInteger omi = new OMInteger(-77);
         omi.setId("Ab");
         char[] s = BinaryRenderer.render(omi);
-        assert s.length == 5;
-        assert s[0] == (TYPE_INT_SMALL | FLAG_ID);
-        assert s[1] == 2;
-        assert s[2] == 0xb3; // -77;
-        assert s[3] == 'A';
-        assert s[4] == 'b';
-        OMInteger omi2 = (OMInteger) BinaryParser.parse(s);
+        assert s.length == 7;
+        assert s[1] == (TYPE_INT_SMALL | FLAG_ID);
+        assert s[2] == 2;
+        assert s[3] == 0xb3; // -77;
+        assert s[4] == 'A';
+        assert s[5] == 'b';
+        OMInteger omi2 = (OMInteger) BinaryParser.parse(s).deOMObject();
         assert omi.equals(omi2);
     }
 
@@ -86,26 +86,26 @@ public class BinaryEncodingTest implements BinaryConstants {
     public void testMedInt() throws Exception {
         OMInteger omi = new OMInteger(0x3456789a); // 878082202
         char[] s = BinaryRenderer.render(omi);
-        assert s.length == 5;
-        assert s[0] == (TYPE_INT_SMALL | FLAG_LONG);
-        assert s[1] == 0x34;
-        assert s[2] == 0x56;
-        assert s[3] == 0x78;
-        assert s[4] == 0x9a;
-        OMInteger omi2 = (OMInteger) BinaryParser.parse(s);
+        assert s.length == 7;
+        assert s[1] == (TYPE_INT_SMALL | FLAG_LONG);
+        assert s[2] == 0x34;
+        assert s[3] == 0x56;
+        assert s[4] == 0x78;
+        assert s[5] == 0x9a;
+        OMInteger omi2 = (OMInteger) BinaryParser.parse(s).deOMObject();
         assert omi.equals(omi2);
     }
 
     public void testMedIntNeg() throws Exception {
         OMInteger omi = new OMInteger(0xf8765432); // -126462926
         char[] s = BinaryRenderer.render(omi);
-        assert s.length == 5;
-        assert s[0] == (TYPE_INT_SMALL | FLAG_LONG);
-        assert s[1] == 0xf8;
-        assert s[2] == 0x76;
-        assert s[3] == 0x54;
-        assert s[4] == 0x32;
-        OMInteger omi2 = (OMInteger) BinaryParser.parse(s);
+        assert s.length == 7;
+        assert s[1] == (TYPE_INT_SMALL | FLAG_LONG);
+        assert s[2] == 0xf8;
+        assert s[3] == 0x76;
+        assert s[4] == 0x54;
+        assert s[5] == 0x32;
+        OMInteger omi2 = (OMInteger) BinaryParser.parse(s).deOMObject();
         assert omi.equals(omi2);
     }
 
@@ -113,20 +113,20 @@ public class BinaryEncodingTest implements BinaryConstants {
         OMInteger omi = new OMInteger(0x3456789a); // 878082202
         omi.setId("Abc");
         char[] s = BinaryRenderer.render(omi);
-        assert s.length == 12;
-        assert s[0] == (TYPE_INT_SMALL | FLAG_ID | FLAG_LONG);
-        assert s[1] == 0;
+        assert s.length == 14;
+        assert s[1] == (TYPE_INT_SMALL | FLAG_ID | FLAG_LONG);
         assert s[2] == 0;
         assert s[3] == 0;
-        assert s[4] == 3;
-        assert s[5] == 0x34;
-        assert s[6] == 0x56;
-        assert s[7] == 0x78;
-        assert s[8] == 0x9a;
-        assert s[9] == 'A';
-        assert s[10] == 'b';
-        assert s[11] == 'c';
-        OMInteger omi2 = (OMInteger) BinaryParser.parse(s);
+        assert s[4] == 0;
+        assert s[5] == 3;
+        assert s[6] == 0x34;
+        assert s[7] == 0x56;
+        assert s[8] == 0x78;
+        assert s[9] == 0x9a;
+        assert s[10] == 'A';
+        assert s[11] == 'b';
+        assert s[12] == 'c';
+        OMInteger omi2 = (OMInteger) BinaryParser.parse(s).deOMObject();
         assert omi.equals(omi2);
     }
 
@@ -134,20 +134,20 @@ public class BinaryEncodingTest implements BinaryConstants {
         OMInteger omi = new OMInteger(0xf456789a); // 878082202
         omi.setId("Abc");
         char[] s = BinaryRenderer.render(omi);
-        assert s.length == 12;
-        assert s[0] == (TYPE_INT_SMALL | FLAG_ID | FLAG_LONG);
-        assert s[1] == 0;
+        assert s.length == 14;
+        assert s[1] == (TYPE_INT_SMALL | FLAG_ID | FLAG_LONG);
         assert s[2] == 0;
         assert s[3] == 0;
-        assert s[4] == 3;
-        assert s[5] == 0xf4;
-        assert s[6] == 0x56;
-        assert s[7] == 0x78;
-        assert s[8] == 0x9a;
-        assert s[9] == 'A';
-        assert s[10] == 'b';
-        assert s[11] == 'c';
-        OMInteger omi2 = (OMInteger) BinaryParser.parse(s);
+        assert s[4] == 0;
+        assert s[5] == 3;
+        assert s[6] == 0xf4;
+        assert s[7] == 0x56;
+        assert s[8] == 0x78;
+        assert s[9] == 0x9a;
+        assert s[10] == 'A';
+        assert s[11] == 'b';
+        assert s[12] == 'c';
+        OMInteger omi2 = (OMInteger) BinaryParser.parse(s).deOMObject();
         assert omi.equals(omi2);
     }
 
@@ -157,7 +157,7 @@ public class BinaryEncodingTest implements BinaryConstants {
         String ss = "1234567890123456789012345678901212112121";
         OMInteger omi = new OMInteger(ss);
         char[] s = BinaryRenderer.render(omi);
-        OMInteger omi2 = (OMInteger) BinaryParser.parse(s);
+        OMInteger omi2 = (OMInteger) BinaryParser.parse(s).deOMObject();
         assert omi.equals(omi2);
         assert omi2.toPopcorn().equals(ss);
     }
@@ -166,7 +166,7 @@ public class BinaryEncodingTest implements BinaryConstants {
         String ss = "-1234567890123456789012345678901212112121";
         OMInteger omi = new OMInteger(ss);
         char[] s = BinaryRenderer.render(omi);
-        OMInteger omi2 = (OMInteger) BinaryParser.parse(s);
+        OMInteger omi2 = (OMInteger) BinaryParser.parse(s).deOMObject();
         assert omi.equals(omi2);
         assert omi2.toPopcorn().equals("("+ss+")");
     }
@@ -177,7 +177,7 @@ public class BinaryEncodingTest implements BinaryConstants {
         OMInteger omi = new OMInteger(ss);
         omi.setId(id);
         char[] s = BinaryRenderer.render(omi);
-        OMInteger omi2 = (OMInteger) BinaryParser.parse(s);
+        OMInteger omi2 = (OMInteger) BinaryParser.parse(s).deOMObject();
         assert omi.equals(omi2);
         assert omi2.toPopcorn().equals(ss + ":" + id);
     }
@@ -188,7 +188,7 @@ public class BinaryEncodingTest implements BinaryConstants {
         OMInteger omi = new OMInteger(ss);
         omi.setId(id);
         char[] s = BinaryRenderer.render(omi);
-        OMInteger omi2 = (OMInteger) BinaryParser.parse(s);
+        OMInteger omi2 = (OMInteger) BinaryParser.parse(s).deOMObject();
         assert omi.equals(omi2);
         assert omi2.toPopcorn().equals("("+ss+"):"+id);
     }
@@ -197,7 +197,7 @@ public class BinaryEncodingTest implements BinaryConstants {
         String ss = "2147483648";
         OMInteger omi = new OMInteger(ss);
         char[] s = BinaryRenderer.render(omi);
-        OMInteger omi2 = (OMInteger) BinaryParser.parse(s);
+        OMInteger omi2 = (OMInteger) BinaryParser.parse(s).deOMObject();
         assert equal(omi, omi2);
     }
 
@@ -207,17 +207,17 @@ public class BinaryEncodingTest implements BinaryConstants {
         for (i = BigInteger.ZERO; i.compareTo(ub) < 0; i = i.add(BigInteger.ONE)) {
             // first loop: small encodings
             omi = new OMInteger(i);
-            assert equal(omi, BinaryParser.parse(BinaryRenderer.render(omi)));
+            assert equal(omi, BinaryParser.parse(BinaryRenderer.render(omi)).deOMObject());
             omi = new OMInteger(i.negate());
-            assert equal(omi, BinaryParser.parse(BinaryRenderer.render(omi)));
+            assert equal(omi, BinaryParser.parse(BinaryRenderer.render(omi)).deOMObject());
         }
         ub = new BigInteger("2147493648"); //0x80000000+10000
         for (i = new BigInteger("2147473648"); i.compareTo(ub) < 0; i = i.add(BigInteger.ONE)) {
             // first loop: small encodings
             omi = new OMInteger(i);
-            assert equal(omi, BinaryParser.parse(BinaryRenderer.render(omi)));
+            assert equal(omi, BinaryParser.parse(BinaryRenderer.render(omi)).deOMObject());
             omi = new OMInteger(i.negate());
-            assert equal(omi, BinaryParser.parse(BinaryRenderer.render(omi)));
+            assert equal(omi, BinaryParser.parse(BinaryRenderer.render(omi)).deOMObject());
         }
     }
 
@@ -228,9 +228,9 @@ public class BinaryEncodingTest implements BinaryConstants {
         for (int j = 1; j < 10000; j++) {
             i = new BigInteger(Math.abs(1+rand.nextInt() % 2345), rand);
             omi = new OMInteger(i);
-            assert equal(omi, BinaryParser.parse(BinaryRenderer.render(omi)));
+            assert equal(omi, BinaryParser.parse(BinaryRenderer.render(omi)).deOMObject());
             omi = new OMInteger(i.negate());
-            assert equal(omi, BinaryParser.parse(BinaryRenderer.render(omi)));
+            assert equal(omi, BinaryParser.parse(BinaryRenderer.render(omi)).deOMObject());
         }
     }
 
@@ -239,45 +239,45 @@ public class BinaryEncodingTest implements BinaryConstants {
     public void testSymbol() throws Exception {
         OMSymbol oms = new OMSymbol("hello", "friend");
         char[] s = BinaryRenderer.render(oms);
-        assert s[0] == TYPE_SYMBOL;
-        assert s[1] == 5;
-        assert s[2] == 6;
-        assert s.length == 14;
-        assert BinaryParser.parse(s).equals(oms);
+        assert s[1] == TYPE_SYMBOL;
+        assert s[2] == 5;
+        assert s[3] == 6;
+        assert s.length == 16;
+        assert BinaryParser.parse(s).deOMObject().equals(oms);
     }
 
     public void testSymbolId() throws Exception {
         OMSymbol oms = new OMSymbol("hello", "friend");
         oms.setId("abc");
         char[] s = BinaryRenderer.render(oms);
-        assert s[0] == (TYPE_SYMBOL | FLAG_ID);
-        assert s[1] == 5;
-        assert s[2] == 6;
-        assert s[3] == 3;
-        assert s.length == 18;
-        assert BinaryParser.parse(s).equals(oms);
+        assert s[1] == (TYPE_SYMBOL | FLAG_ID);
+        assert s[2] == 5;
+        assert s[3] == 6;
+        assert s[4] == 3;
+        assert s.length == 20;
+        assert BinaryParser.parse(s).deOMObject().equals(oms);
     }
 
     public void testSymbolLong() throws Exception {
         OMSymbol oms = new OMSymbol("0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789", "friend");
         char[] s = BinaryRenderer.render(oms);
-        assert s[0] == (TYPE_SYMBOL | FLAG_LONG);
-        assert s[1] == 0 && s[2] == 0 && s[3] == 0 && s[4] == 130;
-        assert s[5] == 0 && s[6] == 0 && s[7] == 0 && s[8] == 6;
-        assert s.length == 130 + 6 + 8 + 1;
-        assert BinaryParser.parse(s).equals(oms);
+        assert s[1] == (TYPE_SYMBOL | FLAG_LONG);
+        assert s[2] == 0 && s[3] == 0 && s[4] == 0 && s[5] == 130;
+        assert s[6] == 0 && s[7] == 0 && s[8] == 0 && s[9] == 6;
+        assert s.length == 2 + 130 + 6 + 8 + 1;
+        assert BinaryParser.parse(s).deOMObject().equals(oms);
     }
 
     public void testSymbolIdLong() throws Exception {
         OMSymbol oms = new OMSymbol("hello", "friend");
         oms.setId("0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789");
         char[] s = BinaryRenderer.render(oms);
-        assert s[0] == (TYPE_SYMBOL | FLAG_LONG | FLAG_ID);
-        assert s[1] == 0 && s[2] == 0 && s[3] == 0 && s[4] == 5;
-        assert s[5] == 0 && s[6] == 0 && s[7] == 0 && s[8] == 6;
-        assert s[9] == 0 && s[10] == 0 && s[11] == 0 && s[12] == 130;
-        assert s.length == 130 + 5 + 6 + 12 + 1;
-        assert BinaryParser.parse(s).equals(oms);
+        assert s[1] == (TYPE_SYMBOL | FLAG_LONG | FLAG_ID);
+        assert s[2] == 0 && s[3] == 0 && s[4] == 0 && s[5] == 5;
+        assert s[6] == 0 && s[7] == 0 && s[8] == 0 && s[9] == 6;
+        assert s[10] == 0 && s[11] == 0 && s[12] == 0 && s[13] == 130;
+        assert s.length == 2 + 130 + 5 + 6 + 12 + 1;
+        assert BinaryParser.parse(s).deOMObject().equals(oms);
     }
 
 
@@ -286,41 +286,41 @@ public class BinaryEncodingTest implements BinaryConstants {
     public void testVar() throws Exception {
         OMVariable omv = new OMVariable("hello");
         char[] s = BinaryRenderer.render(omv);
-        assert s[0] == TYPE_VARIABLE;
-        assert s[1] == 5;
-        assert s.length == 7;
-        assert BinaryParser.parse(s).equals(omv);
+        assert s[1] == TYPE_VARIABLE;
+        assert s[2] == 5;
+        assert s.length == 9;
+        assert BinaryParser.parse(s).deOMObject().equals(omv);
     }
 
     public void testVarId() throws Exception {
         OMVariable omv = new OMVariable("hello");
         omv.setId("abc");
         char[] s = BinaryRenderer.render(omv);
-        assert s[0] == (TYPE_VARIABLE | FLAG_ID);
-        assert s[1] == 5;
-        assert s[2] == 3;
-        assert s.length == 11;
-        assert BinaryParser.parse(s).equals(omv);
+        assert s[1] == (TYPE_VARIABLE | FLAG_ID);
+        assert s[2] == 5;
+        assert s[3] == 3;
+        assert s.length == 13;
+        assert BinaryParser.parse(s).deOMObject().equals(omv);
     }
 
     public void testVarLong() throws Exception {
         OMVariable omv = new OMVariable("0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789");
         char[] s = BinaryRenderer.render(omv);
-        assert s[0] == (TYPE_VARIABLE | FLAG_LONG);
-        assert s[1] == 0 && s[2] == 0 && s[3] == 0 && s[4] == 130;
-        assert s.length == 130 + 4 + 1;
-        assert BinaryParser.parse(s).equals(omv);
+        assert s[1] == (TYPE_VARIABLE | FLAG_LONG);
+        assert s[2] == 0 && s[3] == 0 && s[4] == 0 && s[5] == 130;
+        assert s.length == 2 + 130 + 4 + 1;
+        assert BinaryParser.parse(s).deOMObject().equals(omv);
     }
 
     public void testVarIdLong() throws Exception {
         OMVariable omv = new OMVariable("0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789");
         omv.setId("hello");
         char[] s = BinaryRenderer.render(omv);
-        assert s[0] == (TYPE_VARIABLE | FLAG_ID | FLAG_LONG);
-        assert s[1] == 0 && s[2] == 0 && s[3] == 0 && s[4] == 130;
-        assert s[5] == 0 && s[6] == 0 && s[7] == 0 && s[8] == 5;
-        assert s.length == 130 + 8 + 5 + 1;
-        assert BinaryParser.parse(s).equals(omv);
+        assert s[1] == (TYPE_VARIABLE | FLAG_ID | FLAG_LONG);
+        assert s[2] == 0 && s[3] == 0 && s[4] == 0 && s[5] == 130;
+        assert s[6] == 0 && s[7] == 0 && s[8] == 0 && s[9] == 5;
+        assert s.length == 2 + 130 + 8 + 5 + 1;
+        assert BinaryParser.parse(s).deOMObject().equals(omv);
     }
 
     //==============================================================================
@@ -328,29 +328,35 @@ public class BinaryEncodingTest implements BinaryConstants {
     public void testFloats() throws Exception {
         OMFloat omf = new OMFloat(1.234);
         char[] s = BinaryRenderer.render(omf);
-        assert s[0] == (TYPE_FLOAT);
-        assert s.length == 9;
-        assert BinaryParser.parse(s).equals(omf);
+        assert s[1] == (TYPE_FLOAT);
+        assert s.length == 11;
+        OMFloat ff = (OMFloat) BinaryParser.parse(s).deOMObject();
+        //System.out.println (ff.toPopcorn() + " " + omf.toPopcorn());
+        assert ff.equals(omf);
     }
 
     public void testFloatsId() throws Exception {
         OMFloat omf = new OMFloat(1.234);
         omf.setId("abc");
         char[] s = BinaryRenderer.render(omf);
-        assert s[0] == (TYPE_FLOAT | FLAG_ID);
-        assert s[1] == 3;
-        assert s.length == 9 + 4;
-        assert BinaryParser.parse(s).equals(omf);
+        assert s[1] == (TYPE_FLOAT | FLAG_ID);
+        assert s[2] == 3;
+        assert s.length == 2 + 9 + 4;
+        OMFloat ff = (OMFloat) BinaryParser.parse(s).deOMObject();
+        //System.out.println (ff.toPopcorn() + " " + omf.toPopcorn());
+        assert ff.equals(omf);
     }
 
     public void testFloatsIdLong() throws Exception {
         OMFloat omf = new OMFloat(1.234);
         omf.setId("0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789");
         char[] s = BinaryRenderer.render(omf);
-        assert s[0] == (TYPE_FLOAT | FLAG_ID | FLAG_LONG);
-        assert s[1] == 0 && s[2] == 0 && s[3] == 0 && s[4] == 130;
-        assert s.length == 9 + 4 + 130;
-        assert BinaryParser.parse(s).equals(omf);
+        assert s[1] == (TYPE_FLOAT | FLAG_ID | FLAG_LONG);
+        assert s[2] == 0 && s[3] == 0 && s[4] == 0 && s[5] == 130;
+        assert s.length == 2 + 9 + 4 + 130;
+        OMFloat ff = (OMFloat) BinaryParser.parse(s).deOMObject();
+        //System.out.println (ff.toPopcorn() + " " + omf.toPopcorn());
+        assert ff.equals(omf);
     }
 
     //==============================================================================
@@ -358,32 +364,32 @@ public class BinaryEncodingTest implements BinaryConstants {
     public void testStrings() throws Exception {
         OMString omstr = new OMString("That's a DEAD parrot!");
         char[] s = BinaryRenderer.render(omstr);
-        assert s[0] == (TYPE_STRING_ISO);
-        assert s[1] == 21;
-        assert s.length == 21 + 2;
-        assert BinaryParser.parse(s).equals(omstr);
+        assert s[1] == (TYPE_STRING_ISO);
+        assert s[2] == 21;
+        assert s.length == 2 + 21 + 2;
+        assert BinaryParser.parse(s).deOMObject().equals(omstr);
     }
 
     public void testStringsId() throws Exception {
         OMString omstr = new OMString("That's a DEAD parrot!");
         omstr.setId("JustSleeping");
         char[] s = BinaryRenderer.render(omstr);
-        assert s[0] == (TYPE_STRING_ISO | FLAG_ID);
-        assert s[1] == 21;
-        assert s[2] == 12;
-        assert s.length == 21 + 12 + 3;
-        assert BinaryParser.parse(s).equals(omstr);
+        assert s[1] == (TYPE_STRING_ISO | FLAG_ID);
+        assert s[2] == 21;
+        assert s[3] == 12;
+        assert s.length == 2 + 21 + 12 + 3;
+        assert BinaryParser.parse(s).deOMObject().equals(omstr);
     }
 
     public void testStringsIdLong() throws Exception {
         OMString omstr = new OMString("Um...now look...now look, mate, I've definitely 'ad enough of this. That parrot is definitely deceased, and when I purchased it not 'alf an hour ago, you assured me that its total lack of movement was due to it bein' tired and shagged out following a prolonged squawk.");
         omstr.setId("JustSleeping");
         char[] s = BinaryRenderer.render(omstr);
-        assert s[0] == (TYPE_STRING_ISO | FLAG_ID | FLAG_LONG );
-        assert s[1] == 0 && s[2] == 0 && s[3] == 1 && s[4] == 12;
-        assert s[5] == 0 && s[6] == 0 && s[7] == 0 && s[8] == 12;
-        assert s.length == 268 + 12 + 9;
-        assert BinaryParser.parse(s).equals(omstr);
+        assert s[1] == (TYPE_STRING_ISO | FLAG_ID | FLAG_LONG );
+        assert s[2] == 0 && s[3] == 0 && s[4] == 1 && s[5] == 12;
+        assert s[6] == 0 && s[7] == 0 && s[8] == 0 && s[9] == 12;
+        assert s.length == 2 + 268 + 12 + 9;
+        assert BinaryParser.parse(s).deOMObject().equals(omstr);
     }
 
     //==============================================================================
@@ -393,12 +399,12 @@ public class BinaryEncodingTest implements BinaryConstants {
         OMString omstr = new OMString("That's a DEAD parrot!");
         OMApply oma = oms.apply(new OMString[]{omstr});
         char[] s = BinaryRenderer.render(oma);
-        assert s[0] == (TYPE_APPLICATION);
-        assert s[1] == TYPE_SYMBOL;
-        assert s[13] == TYPE_STRING_ISO;
-        assert s[36] == TYPE_APPLICATION_END;
-        assert s.length == 37;
-        assert BinaryParser.parse(s).equals(oma);
+        assert s[1] == (TYPE_APPLICATION);
+        assert s[2] == TYPE_SYMBOL;
+        assert s[14] == TYPE_STRING_ISO;
+        assert s[37] == TYPE_APPLICATION_END;
+        assert s.length == 39;
+        assert BinaryParser.parse(s).deOMObject().equals(oma);
     }
 
     public void testApplication2() throws Exception {
@@ -407,13 +413,13 @@ public class BinaryEncodingTest implements BinaryConstants {
         OMInteger omi = new OMInteger(412);
         OMApply oma = oms.apply(new OpenMathBase[]{omstr, omi});
         char[] s = BinaryRenderer.render(oma);
-        assert s[0] == (TYPE_APPLICATION);
-        assert s[1] == TYPE_SYMBOL;
-        assert s[13] == TYPE_STRING_ISO;
-        assert s[36] == (TYPE_INT_SMALL | FLAG_LONG);
-        assert s[41] == TYPE_APPLICATION_END;
-        assert s.length == 42;
-        assert BinaryParser.parse(s).equals(oma);
+        assert s[1] == (TYPE_APPLICATION);
+        assert s[2] == TYPE_SYMBOL;
+        assert s[14] == TYPE_STRING_ISO;
+        assert s[37] == (TYPE_INT_SMALL | FLAG_LONG);
+        assert s[42] == TYPE_APPLICATION_END;
+        assert s.length == 44;
+        assert BinaryParser.parse(s).deOMObject().equals(oma);
     }
 
     public void testApplicationId() throws Exception {
@@ -422,13 +428,13 @@ public class BinaryEncodingTest implements BinaryConstants {
         OMApply oma = oms.apply(new OMString[]{omstr});
         oma.setId("abc");
         char[] s = BinaryRenderer.render(oma);
-        assert s[0] == (TYPE_APPLICATION | FLAG_ID);
-        assert s[1] == 3;
-        assert s[5] == TYPE_SYMBOL;
-        assert s[17] == TYPE_STRING_ISO;
-        assert s[40] == TYPE_APPLICATION_END;
-        assert s.length == 41;
-        assert BinaryParser.parse(s).equals(oma);
+        assert s[1] == (TYPE_APPLICATION | FLAG_ID);
+        assert s[2] == 3;
+        assert s[6] == TYPE_SYMBOL;
+        assert s[18] == TYPE_STRING_ISO;
+        assert s[41] == TYPE_APPLICATION_END;
+        assert s.length == 43;
+        assert BinaryParser.parse(s).deOMObject().equals(oma);
     }
 
     //==============================================================================
@@ -438,12 +444,13 @@ public class BinaryEncodingTest implements BinaryConstants {
         OMString omstr = new OMString("That's a DEAD parrot!");
         OMError ome = new OMError(oms, new OMString[]{omstr});
         char[] s = BinaryRenderer.render(ome);
-        assert s[0] == (TYPE_ERROR);
-        assert s[1] == TYPE_SYMBOL;
-        assert s[13] == TYPE_STRING_ISO;
-        assert s[36] == TYPE_ERROR_END;
-        assert s.length == 37;
-        assert BinaryParser.parse(s).equals(ome);
+		assert s[0] == TYPE_OBJECT;
+        assert s[1] == TYPE_ERROR;
+        assert s[2] == TYPE_SYMBOL;
+        assert s[14] == TYPE_STRING_ISO;
+        assert s[37] == TYPE_ERROR_END;
+        assert s.length == 39;
+        assert BinaryParser.parse(s).deOMObject().equals(ome);
     }
 
     public void testError2() throws Exception {
@@ -452,13 +459,13 @@ public class BinaryEncodingTest implements BinaryConstants {
         OMInteger omi = new OMInteger(412);
         OMError ome = new OMError(oms, new OpenMathBase[]{omstr, omi});
         char[] s = BinaryRenderer.render(ome);
-        assert s[0] == (TYPE_ERROR);
-        assert s[1] == TYPE_SYMBOL;
-        assert s[13] == TYPE_STRING_ISO;
-        assert s[36] == (TYPE_INT_SMALL | FLAG_LONG);
-        assert s[41] == TYPE_ERROR_END;
-        assert s.length == 42;
-        assert BinaryParser.parse(s).equals(ome);
+        assert s[1] == (TYPE_ERROR);
+        assert s[2] == TYPE_SYMBOL;
+        assert s[14] == TYPE_STRING_ISO;
+        assert s[37] == (TYPE_INT_SMALL | FLAG_LONG);
+        assert s[42] == TYPE_ERROR_END;
+        assert s.length == 44;
+        assert BinaryParser.parse(s).deOMObject().equals(ome);
     }
 
     public void testErrorId() throws Exception {
@@ -467,13 +474,13 @@ public class BinaryEncodingTest implements BinaryConstants {
         OMError ome = new OMError(oms, new OMString[]{omstr});
         ome.setId("abc");
         char[] s = BinaryRenderer.render(ome);
-        assert s[0] == (TYPE_ERROR | FLAG_ID);
-        assert s[1] == 3;
-        assert s[5] == TYPE_SYMBOL;
-        assert s[17] == TYPE_STRING_ISO;
-        assert s[40] == TYPE_ERROR_END;
-        assert s.length == 41;
-        assert BinaryParser.parse(s).equals(ome);
+        assert s[1] == (TYPE_ERROR | FLAG_ID);
+        assert s[2] == 3;
+        assert s[6] == TYPE_SYMBOL;
+        assert s[18] == TYPE_STRING_ISO;
+        assert s[41] == TYPE_ERROR_END;
+        assert s.length == 43;
+        assert BinaryParser.parse(s).deOMObject().equals(ome);
     }
 
     //==============================================================================
@@ -484,14 +491,14 @@ public class BinaryEncodingTest implements BinaryConstants {
         OMVariable[] vars = { new OMVariable("just"), new OMVariable("sleeping") };
         OMBind ombind = oms.bind(vars, param);
         char[] s = BinaryRenderer.render(ombind);
-        assert s[0] == TYPE_BINDING;
-        assert s[1] == TYPE_SYMBOL;
-        assert s[13] == TYPE_BVARS;
-        assert s[30] == TYPE_BVARS_END;
-        assert s[31] == TYPE_STRING_ISO;
-        assert s.length == 55;
-        assert s[54] == TYPE_BINDING_END;
-        assert BinaryParser.parse(s).equals(ombind);
+        assert s[1] == TYPE_BINDING;
+        assert s[2] == TYPE_SYMBOL;
+        assert s[14] == TYPE_BVARS;
+        assert s[31] == TYPE_BVARS_END;
+        assert s[32] == TYPE_STRING_ISO;
+        assert s[55] == TYPE_BINDING_END;
+        assert s.length == 57;
+        assert BinaryParser.parse(s).deOMObject().equals(ombind);
     }
 
     public void testBindingId() throws Exception {
@@ -501,15 +508,15 @@ public class BinaryEncodingTest implements BinaryConstants {
         OMBind ombind = oms.bind(vars, param);
         ombind.setId("ei_die");
         char[] s = BinaryRenderer.render(ombind);
-        assert s[0] == (TYPE_BINDING | FLAG_ID);
-        assert s[1] == 6;
-        assert s[8] == TYPE_SYMBOL;
-        assert s[20] == TYPE_BVARS;
-        assert s[37] == TYPE_BVARS_END;
-        assert s[38] == TYPE_STRING_ISO;
-        assert s.length == 62;
-        assert s[61] == TYPE_BINDING_END;
-        OMBind bb = (OMBind) BinaryParser.parse(s);
+        assert s[1] == (TYPE_BINDING | FLAG_ID);
+        assert s[2] == TYPE_STRING_ISO;
+        assert s[9] == TYPE_SYMBOL;
+        assert s[21] == TYPE_BVARS;
+        assert s[38] == TYPE_BVARS_END;
+        assert s[39] == TYPE_STRING_ISO;
+        assert s[62] == TYPE_BINDING_END;
+        assert s.length == 64;
+        OMBind bb = (OMBind) BinaryParser.parse(s).deOMObject();
         assert bb.equals(ombind);
         assert bb.getId().equals("ei_die");
     }
@@ -522,12 +529,12 @@ public class BinaryEncodingTest implements BinaryConstants {
         OMString omstr = new OMString("Well, o'course it was nailed there! If I hadn't nailed that bird down, it would have nuzzled up to those bars, bent 'em apart with its beak, and VOOM! Feeweeweewee!");
         omi.putAt(oms, omstr);
         char[] s = BinaryRenderer.render(omi);
-        assert s[0] == TYPE_ATTRIBUTION;
-        assert s[1] == TYPE_ATTRPAIRS;
-        assert s[2] == TYPE_SYMBOL;
-        assert s[188] == TYPE_ATTRIBUTION_END;
-        assert s.length == 189;
-        OMInteger omi2 = (OMInteger) BinaryParser.parse(s);
+        assert s[1] == TYPE_ATTRIBUTION;
+        assert s[2] == TYPE_ATTRPAIRS;
+        assert s[3] == TYPE_SYMBOL;
+        assert s[189] == TYPE_ATTRIBUTION_END;
+        assert s.length == 191;
+        OMInteger omi2 = (OMInteger) BinaryParser.parse(s).deOMObject();
         assert omi.equals(omi2);
         assert omi.getAt(oms).equals(omstr);
     }
@@ -555,9 +562,9 @@ public class BinaryEncodingTest implements BinaryConstants {
         char[] s2 = BinaryRenderer.render(oma, false);
         assert s.length < s2.length;
         //hexdump(s);
-        OMApply oma2 = (OMApply) BinaryParser.parse(s);
+        OMApply oma2 = (OMApply) BinaryParser.parse(s).deOMObject();
         assert oma.equals(oma2);
-        OMApply oma3 = (OMApply) BinaryParser.parse(s2);
+        OMApply oma3 = (OMApply) BinaryParser.parse(s2).deOMObject();
         assert oma.equals(oma3);
     }
 

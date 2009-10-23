@@ -19,6 +19,9 @@
 package org.symcomp.openmath;
 
 import java.io.*;
+import java.lang.Class;
+import java.lang.reflect.Method;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 import java.util.HashMap;
 import java.math.BigInteger;
@@ -52,7 +55,6 @@ import org.xml.sax.InputSource;
  * functionality is integrated into all classes and OMBind respectively.
  */
 public abstract class OpenMathBase {
-
     /** the id of the node, if set */
     protected String id = null;
     /** the cdbase of the node, if set*/
@@ -156,7 +158,7 @@ public abstract class OpenMathBase {
      * @param params the parameters
      * @return the application of this
      */
-    public OMApply apply(OpenMathBase[] params) {
+    public OMApply apply(OpenMathBase... params) {
         return new OMApply(this, params);
     }
 
@@ -403,7 +405,7 @@ public abstract class OpenMathBase {
      * @param that the OpenMathBase Object to test against
      * @return true if the attributes are the same, false otherwise
      */
-    protected Boolean sameAttributes(OpenMathBase that) {
+    protected boolean sameAttributes(OpenMathBase that) {
         if (this.getClass() != that.getClass()) { return false; }
         if ((this.id != null && that.id == null) || (that.id != null && this.id == null)) { return false;}
         if ((this.id != null && that.id != null) && !this.id.equals(that.id)) { return false; }
@@ -424,57 +426,142 @@ public abstract class OpenMathBase {
     // ========== Visiting trees ==========
     //
 
-    public void traverse(OpenMathVisitor visitor) {
-        // defaut is to do nothing
+    /**
+     * Traverse the Object-tree with the visitor.
+     * @param visitor
+     * @return
+     */
+    public OpenMathBase traverse(OpenMathVisitor visitor) {
+        return visitor.visit(this);
     }
 
     //
     // ========== Methods for parsing OpenMath Representatios ==========
     //
 
-    //=================== Generic Parsing Switchª ===================
+    //=================== Supported Encodings ===================
+
+	/** constants **/
+	public enum ENCODINGS { 
+		BINARY("binary", "parseBinary", "parseBinary", "toBinaryAsString", "toBinary"),
+		XML("xml", "parseXml", "toXml"),
+		POPCORN("popcorn", "parsePopcorn", "toPopcorn");
+
+		private final String str;
+		public String toString() { return str; } 
+		
+		public static ENCODINGS get(String str) {
+			for (OpenMathBase.ENCODINGS e : OpenMathBase.ENCODINGS.values()) {
+				if (e.toString().equals(str)) return e;
+			}
+			return null;
+		}
+		
+		private Method parseReader, parseString;
+		public OpenMathBase parse(Reader r) throws OpenMathException { 
+			try {
+				return (OpenMathBase) parseReader.invoke(null,r); 
+			} catch (IllegalAccessException iae) { throw new OpenMathException(iae.getMessage()); }
+			catch (InvocationTargetException ite) { throw (OpenMathException) ite.getCause(); }
+		}
+		public OpenMathBase parse(String s) throws OpenMathException {
+			try {
+				return (OpenMathBase) parseString.invoke(null,s); 
+			} catch (IllegalAccessException iae) { throw new OpenMathException(iae.getMessage()); }
+			catch (InvocationTargetException ite) { throw (OpenMathException) ite.getCause(); }
+		}			
+		
+		private Method renderString, renderWriter;
+		public String render(OpenMathBase obj) throws OpenMathException { 
+			try {
+				return (String) renderString.invoke(obj); 
+			} catch (IllegalAccessException iae) { throw new OpenMathException(iae.getMessage()); }
+			catch (InvocationTargetException ite) { throw (OpenMathException) ite.getCause(); }
+		}			
+		public void render(OpenMathBase obj, Writer out) throws OpenMathException { 
+			try {
+				renderWriter.invoke(obj,out); 
+			} catch (IllegalAccessException iae) { throw new OpenMathException(iae.getMessage()); }
+			catch (InvocationTargetException ite) { throw (OpenMathException) ite.getCause(); }
+		}			
+
+	    ENCODINGS(String s, String psr, String pss, String rss, String rsw) {
+			this.str = s; 
+			try {
+				this.parseReader = OpenMathBase.class.getMethod(psr, Reader.class);
+				this.parseString = OpenMathBase.class.getMethod(pss, String.class);	
+				this.renderString = OpenMathBase.class.getMethod(rss);
+				this.renderWriter = OpenMathBase.class.getMethod(rsw, Writer.class);	
+			} catch (NoSuchMethodException e) {
+				System.out.println("WHOA! Problems constructing OpenMathBase.ENCODINGS!!");
+				e.printStackTrace();
+			}
+		};
+		ENCODINGS(String s, String ps, String rs) {
+			this(s, ps, ps, rs, rs);
+		}
+	};
+
+
+    //=================== Generic Parsing Switch ===================
+
+    /**
+     * Guesses the encoding of the OpenMath object in the given Reader by the first byte.
+     * @param r a reader that delivers an OpenMath stream
+     * @return an Object[] o, o[0] is one of the OpenMathBase.ENCODINGS, 
+	 *         o[1] is the reader you should subsequently read from.
+     * @throws OpenMathException if something went wrong
+     */
+ 	public static Object[] sniffEncoding(Reader r) throws OpenMathException {
+		Reader in;
+		char c = ' ';
+		try {
+		     if (r.markSupported())
+		         in = r;
+		     else
+		         in = new BufferedReader(r);
+		     in.mark(1024);
+
+		     while (Character.isSpaceChar(c)) c = (char) in.read();
+		     in.reset();
+		} catch (IOException e) {
+			throw new OpenMathException("Something failed while sniffEncoding " + e.getMessage());
+		}
+		
+	     if ((byte) c == -1) {
+	     	throw new OpenMathException("OpenMathBase.parse(Reader r) Could not (sufficiently) read from r");
+	     }
+	
+	     switch(c) {
+		     case BinaryConstants.TYPE_OBJECT: 	return new Object[]{ ENCODINGS.BINARY, in};
+		     case '<':							return new Object[]{ ENCODINGS.XML, in};
+		     default:							return new Object[]{ ENCODINGS.POPCORN, in};
+	     }
+	 } // sniffEncoding Reader
 
     /**
      * Parse the content from the given Reader to an OpenMathBase tree
-     * The encoding is guessed by the first byte.
+     * The encoding is guessed by the first byte (using sniffEncoding)
      * @param r a reader that delivers an OpenMath stream
      * @return the representing OpenMathBase tree
-     * @throws Exception if something went wrong
+     * @throws OpenMathException if something went wrong
      */
-    public static OpenMathBase parse(Reader r) throws Exception {
-        Reader in;
-        if (r.markSupported())
-            in = r;
-        else
-            in = new BufferedReader(r);
-        in.mark(1024);
-
-        char c = ' ';
-        while (Character.isSpaceChar(c)) c = (char) in.read();
-        in.reset();
+    public static OpenMathBase parse(Reader r) throws OpenMathException {
+		Object[] sn = sniffEncoding(r);
+		ENCODINGS enc = (ENCODINGS) sn[0];
+		Reader in = (Reader) sn[1];
 		
-		if ((byte) c == -1) {
-			throw new IOException("OpenMathBase.parse(Reader r) Could not (sufficiently) read from r");
-		}
-
-        switch(c) {
-        case BinaryConstants.TYPE_OBJECT:
-            return parseBinary(in);
-        case '<':
-            return parseXml(in);
-        default:
-            return parsePopcorn(in);
-        }
-    } // parse Reader
+		return enc.parse(in);
+	} // parse Reader
 
     /**
      * Parse the given OpenMath string to an OpenMathBase tree.
      * The encoding is guessed by the first byte.
      * @param text an OpenMath XML encoded string
      * @return the representing OpenMathBase tree
-     * @throws Exception if something went wrong
+     * @throws OpenMathException if something went wrong
      */
-    public static OpenMathBase parse(String text) throws Exception {
+    public static OpenMathBase parse(String text) throws OpenMathException {
         return parse(new StringReader(text));
     } // parse
 
@@ -484,9 +571,9 @@ public abstract class OpenMathBase {
      * Parse the given OpenMath XML encoded string to an OpenMathBase tree
      * @param r a Reader that delivers an OpenMath XML encoded string
      * @return the representing OpenMathBase tree
-     * @throws Exception if something went wrong
+     * @throws OpenMathException if something went wrong
      */
-    public static OpenMathBase parseXml(Reader r) throws Exception {
+    public static OpenMathBase parseXml(Reader r) throws OpenMathException {
         try {
             return OMSaxParser.parse(new InputSource(r));
         } catch (Exception e) {
@@ -499,9 +586,9 @@ public abstract class OpenMathBase {
      * Parse the given OpenMath XML encoded string to an OpenMathBase tree
      * @param s an OpenMath XML encoded string
      * @return the representing OpenMathBase tree
-     * @throws Exception if something went wrong
+     * @throws OpenMathException if something went wrong
      */
-    public static OpenMathBase parseXml(String s) throws Exception {
+    public static OpenMathBase parseXml(String s) throws OpenMathException {
         try {
             return OMSaxParser.parse(new InputSource(s));
         } catch (Exception e) {
@@ -515,20 +602,28 @@ public abstract class OpenMathBase {
      * Parse the given OpenMath binary encoded string to an OpenMathBase tree
      * @param r a Reader that delivers an OpenMath binary encoded string
      * @return the representing OpenMathBase tree
-     * @throws Exception if something went wrong
+     * @throws OpenMathException if something went wrong
      */
-    public static OpenMathBase parseBinary(Reader r) throws Exception {
-        return BinaryParser.parse(r);
+    public static OpenMathBase parseBinary(Reader r) throws OpenMathException {
+		try {
+        	return BinaryParser.parse(r);
+        } catch (Exception e) {
+            throw new OpenMathException("Parsing binary went wrong: "+e.getMessage());
+		}
     } // parseBinary Reader
 
     /**
      * Parse the given OpenMath binary encoded string to an OpenMathBase tree
      * @param s an OpenMath binary encoded string
      * @return the representing OpenMathBase tree
-     * @throws Exception if something went wrong
+     * @throws OpenMathException if something went wrong
      */
-    public static OpenMathBase parseBinary(String s) throws Exception {
-        return BinaryParser.parse(new StringReader(s));
+    public static OpenMathBase parseBinary(String s) throws OpenMathException {
+		try {
+        	return BinaryParser.parse(new StringReader(s));
+        } catch (Exception e) {
+            throw new OpenMathException("Parsing binary went wrong: "+e.getMessage());
+		}
     } // parseBinary String
 
     //=================== PARSE POPCORN ===================
@@ -539,9 +634,13 @@ public abstract class OpenMathBase {
      * @return the represented OpenMathBase tree
      * @throws OpenMathException if sth went wrong ;)
      */
-    public synchronized static OpenMathBase parsePopcorn(Reader r) throws OpenMathException, IOException {
-        ReaderInputStream ris = new ReaderInputStream(r);
-        return parsePopcorn(ris);
+    public synchronized static OpenMathBase parsePopcorn(Reader r) throws OpenMathException {
+		try {
+	        ReaderInputStream ris = new ReaderInputStream(r);
+	        return parsePopcorn(ris);
+		} catch (Exception e) {
+			throw new OpenMathException("Problem in parsePopcorn(Reader r) : " + e.getMessage());
+		}
     } // parsePopcorn Reader
 
     /**
@@ -586,11 +685,6 @@ public abstract class OpenMathBase {
 	        PopcornWalker walker = new PopcornWalker(nodes); // create a tree parser
 	        om = walker.start(); // launch at start rule prog
         } catch(Exception e) {
-            boolean test = false;
-            assert test = true; // intentional side-effect
-            if (test) {
-                //e.printStackTrace();
-            }
             throw new OpenMathException("Parsing Popcorn Code went wrong:" + e.getMessage());
         }
         return om;
@@ -621,10 +715,14 @@ public abstract class OpenMathBase {
     /**
      * Render whole tree to an XML-string w/o namespace w/o dereferencing
      * @param out the writer to which to write
-     * @throws Exception if something goes wrong
+     * @throws OpenMathException if something goes wrong
      */
-    public void toXml(Writer out) throws Exception {
-        new OMXmlRenderer(out).render(this);
+    public void toXml(Writer out) throws OpenMathException {
+		try {
+        	new OMXmlRenderer(out).render(this);
+		} catch (Exception e) {
+			throw new OpenMathException("toXml(Writer) failed: " + e.getMessage());
+		}
     }
 
     //=================== RENDER BINARY ===================
@@ -632,7 +730,6 @@ public abstract class OpenMathBase {
     /**
      * Render whole tree to the binary representation
      * @return a char[]
-     * @throws Exception if something goes wrong
      */
     public char[] toBinary() {
 		char[] ret;
@@ -647,12 +744,25 @@ public abstract class OpenMathBase {
     }
 
     /**
+     * Render whole tree to the binary representation.
+     * @return a String
+     */
+    public String toBinaryAsString() {
+		char[] r = toBinary();
+		return (r == null ? null : new String(r));
+    }
+
+    /**
      * Render whole tree to the binary representation
      * @param out the writer to which to write
-     * @throws Exception if something goes wrong
+     * @throws OpenMathException if something goes wrong
      */
-    public void toBinary(Writer out) throws Exception {
-        BinaryRenderer.render(out, this);
+    public void toBinary(Writer out) throws OpenMathException {
+		try {
+        	BinaryRenderer.render(out, this);
+		} catch (Exception e) {
+			throw new OpenMathException("toBinary(Writer) failed: " + e.getMessage());
+		}
     }
 
     //=================== RENDER POPCORN ===================
@@ -678,10 +788,14 @@ public abstract class OpenMathBase {
      * Convert the given OpenMath tree to a string containing a POPCORN representation.
      * This method uses org.symcomp.openmath.popcorn.PopcornRenderer
      * @param out a writer to deliver the POPCODE
-     * @throws Exception if something goes wrong
+     * @throws OpenMathException if something goes wrong
      */
-    public void toPopcorn(Writer out) throws Exception {
-        new PopcornRenderer(out).render(this);
+    public void toPopcorn(Writer out) throws OpenMathException {
+		try {
+        	new PopcornRenderer(out).render(this);
+		} catch (Exception e) {
+			throw new OpenMathException("toPopcorn(Writer) failed: " + e.getMessage());
+		}
     }
 
     //=================== RENDER LATEX ===================
@@ -707,8 +821,21 @@ public abstract class OpenMathBase {
      * @param out a Writer for the LaTeX representation
      * @throws Exception if something goes wrong
      */
-    public void toLatex(Writer out) throws Exception {
-        new LatexRenderer(out).render(this);
+    public void toLatex(Writer out) throws OpenMathException {
+		try {
+	        new LatexRenderer(out).render(this);
+		} catch (Exception e) {
+			throw new OpenMathException("toBinary(Writer) failed: " + e.getMessage());
+		}
+    }
+
+    /**
+     * used to override operators for use from Scala
+     * @param that
+     * @return
+     */
+    public OpenMathBase $plus(OpenMathBase that) {
+        return new OMApply(new OMSymbol("arith1", "plus"), new OpenMathBase[] { this, that });
     }
 
 }

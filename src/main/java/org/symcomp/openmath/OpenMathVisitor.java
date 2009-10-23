@@ -28,7 +28,7 @@ public abstract class OpenMathVisitor {
         } else if (c.equals(OMError.class)) {
                 return visit((OMError) om);
         }
-        return null;
+        throw new RuntimeException("This should never happen");
     }
 
     public OpenMathBase visit(OMApply om) { return om; }

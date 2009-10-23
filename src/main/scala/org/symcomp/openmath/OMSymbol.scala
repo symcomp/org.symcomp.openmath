@@ -18,36 +18,24 @@
 
 package org.symcomp.openmath;
 
-import java.util.Map;
-import java.io.PrintStream;
-
 /**
- * Representing the OpenMath variable node <tt>&lt;OMV ... /&gt;</tt> 
+ * Representing the OpenMath symbol node <tt>&lt;OMS ... /&gt;</tt> 
  */
-public class OMVariable extends OpenMathBase {
+case class OMSymbol(cd:String, name:String) extends OpenMathBase {
 	
-	//=== Attributes ===
-	private String name;
+    def getName() = name;
+    def getCd() = cd;
+	def fullname() = cd + "." + name;
 
-    /**
-     * construct <tt>&lt;OMV name="name" /&gt;</tt>
-     */
-	public OMVariable(String name) {
-		this.name = name;
-	}
-
-    public String getName() {
-        return name;
+ 	override def equals(that:Any):Boolean = {
+        if (that.isInstanceOf[String] || that.isInstanceOf[java.lang.String]) {
+            val s = that.asInstanceOf[String]
+            s.trim().equals(this.fullname())
+        } else {
+            if (!that.isInstanceOf[OMSymbol]) return false
+            val s:OMSymbol = that.asInstanceOf[OMSymbol]
+            this.sameAttributes(s) && this.name == s.getName() && this.cd == s.getCd()
+        }
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-	
-	//=== Methods ===
- 	public boolean equals(Object that) {
-        if (that.getClass() != OMVariable.class) return false;
-        OMVariable v = (OMVariable) that;
-        return this.sameAttributes(v) && (this.name.equals(v.getName()));
-    }
-} 
+}

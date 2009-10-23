@@ -58,7 +58,7 @@ public class BinaryParser implements BinaryConstants {
         String id = null;
         int idlen = -1;
         int type = (char) (0xff & reader.read());
-        //System.out.println(type);
+        // System.out.println("type: " + (int) type);
         OpenMathBase result = null;
         boolean has_id = 0 != (type & FLAG_ID);
         boolean is_long = 0 != (type & FLAG_LONG);
@@ -206,6 +206,8 @@ public class BinaryParser implements BinaryConstants {
             }
             OpenMathBase param = slurpNext();
             result = new OMBind(oms, bvars.toArray(new OMVariable[bvars.size()]), param);
+			if (reader.read() != TYPE_BINDING_END)
+                throw new OpenMathException("Binary Format Error: Expecting binding-end-byte");
             break;
         case TYPE_REFERENCE_INT:
             int idref = slurpNumber(is_long);

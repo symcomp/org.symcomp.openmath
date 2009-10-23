@@ -1,5 +1,5 @@
 //---------------------------------------------------------------------------
-//  Copyright 2006-2009 
+//  Copyright 2006-2009
 //    Dan Roozemond, d.a.roozemond@tue.nl, (TU Eindhoven, Netherlands)
 //    Peter Horn, horn@math.uni-kassel.de (University Kassel, Germany)
 //
@@ -16,40 +16,16 @@
 //  limitations under the License.
 //---------------------------------------------------------------------------
 
-package org.symcomp.openmath;
+package org.symcomp.openmath
 
-import java.util.Map;
-import java.io.PrintStream;
+case class OMString(value:String) extends OpenMathBase {
 
-/**
- * Representing the OpenMath reference node <tt>&lt;OMR ... /&gt;</tt> 
- */
-public class OMReference extends OpenMathBase {
-	
-	//=== Attributes ===
-    private String href;
+    def getValue():String = value
 
-    /**
-     * construct <tt>&lt;OMR href="href" /&gt;</tt>
-     */
-	public OMReference(String href) {
-		this.href = href;
-	}
-
-    public String getHref() {
-        return href;
+ 	override def equals(that:Any):Boolean = {
+        if (!that.isInstanceOf[OMString]) return false
+        val s = that.asInstanceOf[OMString]
+        this.sameAttributes(s) && (this.value == s.value)
     }
 
-    public void setHref(String href) {
-        this.href = href;
-    }
-
-    //=== Methods ===
-	
- 	public boolean equals(Object that) {
-        if(that.getClass() != OMReference.class) return false;
-        OMReference r = (OMReference) that;
- 		if(!this.sameAttributes(r)) return false;
-		return (this.href.equals(r.getHref()));
- 	}
-} 
+}

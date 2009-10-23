@@ -81,8 +81,8 @@ public class EqualityTest {
         assert !(new OMSymbol("hundd", "katz").equals("hund.katze"));
         assert !(new OMSymbol("fred", "jupiter").equals("fredjupiter"));
         assert new OMSymbol("fred", "jupiter").equals(" fred.jupiter");
-        assert new OMSymbol("fred", "jupiter").equals(" fred .jupiter");
-        assert new OMSymbol("fred", "jupiter").equals("fred. jupiter");
+        assert !(new OMSymbol("fred", "jupiter").equals(" fred .jupiter"));
+        assert !(new OMSymbol("fred", "jupiter").equals("fred. jupiter"));
         assert new OMSymbol("fred", "jupiter").equals("fred.jupiter ");
     }
 

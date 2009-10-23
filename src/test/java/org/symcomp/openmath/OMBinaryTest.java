@@ -52,7 +52,7 @@ public class OMBinaryTest {
 	public void testBinaryRepr() throws Exception {
 		OpenMathBase b1 = new OMBinary("SGVsbG8sIHdvcmxkIQ==");
 		char[] c = b1.toBinary();
-		OpenMathBase b2 = OpenMathBase.parseBinary(new String(c));
+		OpenMathBase b2 = OpenMathBase.parseBinary(new String(c)).deOMObject();
 		
 		assert b1.equals(b2);
 	}

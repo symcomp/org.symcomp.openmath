@@ -238,12 +238,15 @@ public class OMSaxParser extends DefaultHandler {
             oo = (Object[]) stack.pop();
             if (inForeign > 0) return;
             tr.endDocument();
-            result = new OMForeign(foreignWriter.getBuffer().toString().substring(43));
+            String content = (foreignWriter.getBuffer().toString().substring(43));
             attributes = (HashMap<String, String>) oo[1];
+            result = null;
             if (null != attributes) {
                 String enc = attributes.get("encoding");
                 if (enc != null)
-                    ((OMForeign)result).setEncoding(enc);
+                    result = new OMForeign(content, enc);
+            } else {
+                result = new OMForeign(content);
             }
             break;
         case OMI:       // --------------------------------------------------------

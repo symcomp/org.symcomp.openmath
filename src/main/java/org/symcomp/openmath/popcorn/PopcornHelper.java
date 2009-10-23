@@ -744,13 +744,11 @@ public class PopcornHelper {
 		OpenMathBase om = (OpenMathBase) s;
 		if (om.isInteger()) {
 			OMInteger omi = (OMInteger) om;
-			omi.setValue(omi.getIntValue().negate());
-			return omi;
+			//omi.setValue(omi.getIntValue().negate());
+			return new OMInteger(omi.getIntValue().negate());
 		}
 		if (om.isFloat()) {
-			OMFloat omf = (OMFloat) om;
-			omf.setDec(-omf.getDec());
-			return omf;
+			return new OMFloat(-((OMFloat)om).getDec());
 		}
 		return (new OMSymbol("arith1", "unary_minus")).apply(new OpenMathBase[] {om});
 	}
