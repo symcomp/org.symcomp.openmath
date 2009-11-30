@@ -1,7 +1,22 @@
-package org.symcomp.openmath;
+//---------------------------------------------------------------------------
+//  Copyright 2006-2009
+//    Dan Roozemond, d.a.roozemond@tue.nl, (TU Eindhoven, Netherlands)
+//    Peter Horn, horn@math.uni-kassel.de (University Kassel, Germany)
+//
+//  Licensed under the Apache License, Version 2.0 (the "License");
+//  you may not use this file except in compliance with the License.
+//  You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+//  Unless required by applicable law or agreed to in writing, software
+//  distributed under the License is distributed on an "AS IS" BASIS,
+//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//  See the License for the specific language governing permissions and
+//  limitations under the License.
+//---------------------------------------------------------------------------
 
-import java.io.Writer;
-import java.io.IOException;
+package org.symcomp.openmath;
 
 public abstract class OpenMathVisitor {
 
@@ -27,6 +42,8 @@ public abstract class OpenMathVisitor {
                 return visit((OMApply) om);
         } else if (c.equals(OMError.class)) {
                 return visit((OMError) om);
+        } else if (OMContainer.class.isInstance(om)) {
+                return visit(((OMContainer) om).toOpenMath());
         }
         throw new RuntimeException("This should never happen");
     }

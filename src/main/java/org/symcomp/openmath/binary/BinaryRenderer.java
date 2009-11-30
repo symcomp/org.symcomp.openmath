@@ -122,7 +122,12 @@ public class BinaryRenderer implements BinaryConstants {
 	            srender ((OMBinary) om);
 	    } else if (c.equals(OMForeign.class)) {
 	            srender ((OMForeign) om);
-	    }
+	    } else if (OMContainer.class.isInstance(om)) {
+                srender(((OMContainer) om).toOpenMath());
+        } else {
+                throw new Exception("Unknown class, Programming error");
+        }
+
         if (om.isAttributed()) {
             writeChar(TYPE_ATTRIBUTION_END);
         }

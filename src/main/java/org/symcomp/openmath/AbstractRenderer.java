@@ -166,6 +166,8 @@ public abstract class AbstractRenderer {
                 render((OMBinary) om, prec);
         } else if (c.equals(OMForeign.class)) {
                 render((OMForeign) om, prec);
+        } else if (OMContainer.class.isInstance(om)) {
+                render(((OMContainer) om).toOpenMath(), prec);
         } else {
 				throw new IOException("Cannot render class " + c.toString());
 		}

@@ -154,6 +154,8 @@ public class OMXmlRenderer {
             attrs.addAttribute("", "", "name", "CDATA", omv.getName());
             tr.startElement("", "", "OMV", attrs);
             tr.endElement("", "", "OMV");
+        } else if (OMContainer.class.isInstance(om)) {
+            srender(((OMContainer)om).toOpenMath());
         } else {
             throw new Exception("Unknown class, Programming error");
         }
