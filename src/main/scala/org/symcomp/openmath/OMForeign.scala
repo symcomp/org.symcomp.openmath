@@ -18,6 +18,8 @@
 
 package org.symcomp.openmath
 
+import java.math.BigInteger
+
 case class OMForeign(content:String, encoding:String) extends OpenMathBase {
 
     def this(cont:String) = this(cont, null)
@@ -33,5 +35,10 @@ case class OMForeign(content:String, encoding:String) extends OpenMathBase {
 		if (this.encoding != null && !(this.encoding.equals(s.encoding))) return false;
 		this.content.equals(s.content);
  	}
+
+  override def subTreeHash():Tuple2[java.lang.Integer, String] = {
+    (1, OpenMathBase.b64md5String(content+":"+encoding) + ":Foreign" )
+  }
+
 
 }

@@ -33,6 +33,12 @@ case class OMObject(element:OpenMathBase) extends OpenMathBase {
         OMObject(element.traverse(visitor))
     }
 
+    override def subTreeHash():Tuple2[java.lang.Integer, String] = {
+        val enc = element.subTreeHash
+        (enc._1.asInstanceOf[Int] + 1, OpenMathBase.b64md5String(enc._2 + ":Object") )
+    }
+
+
 
 }
 

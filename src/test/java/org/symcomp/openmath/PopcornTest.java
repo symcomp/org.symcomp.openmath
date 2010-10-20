@@ -198,6 +198,33 @@ public class PopcornTest {
 		assert !(x1.equals(x2));
 
 	}
+	
+	public void testPrec4() throws Exception {
+		String[][] tests = {
+			{"-$x^2", "<OMA><OMS cd=\"arith1\" name=\"unary_minus\"/><OMA><OMS cd=\"arith1\" name=\"power\"/><OMV name=\"x\"/><OMI>2</OMI></OMA></OMA>"},
+			{"-($x^2)", "<OMA><OMS cd=\"arith1\" name=\"unary_minus\"/><OMA><OMS cd=\"arith1\" name=\"power\"/><OMV name=\"x\"/><OMI>2</OMI></OMA></OMA>"},
+			{"(-$x)^2", "<OMA><OMS cd=\"arith1\" name=\"power\"/><OMA><OMS cd=\"arith1\" name=\"unary_minus\"/><OMV name=\"x\"/></OMA><OMI>2</OMI></OMA>"},
+			{"1 + 2 - $x^3", "<OMA><OMS cd=\"arith1\" name=\"minus\"/><OMA><OMS cd=\"arith1\" name=\"plus\"/><OMI>1</OMI><OMI>2</OMI></OMA><OMA><OMS cd=\"arith1\" name=\"power\"/><OMV name=\"x\"/><OMI>3</OMI></OMA></OMA>"},
+			{"1 + 2 + 4*$x^3", "<OMA><OMS cd=\"arith1\" name=\"plus\"/><OMI>1</OMI><OMI>2</OMI><OMA><OMS cd=\"arith1\" name=\"times\"/><OMI>4</OMI><OMA><OMS cd=\"arith1\" name=\"power\"/><OMV name=\"x\"/><OMI>3</OMI></OMA></OMA></OMA>"},
+			{"1 + 2 - 4*$x^3 + 5", "<OMA><OMS cd=\"arith1\" name=\"plus\"/><OMA><OMS cd=\"arith1\" name=\"minus\"/><OMA><OMS cd=\"arith1\" name=\"plus\"/><OMI>1</OMI><OMI>2</OMI></OMA><OMA><OMS cd=\"arith1\" name=\"times\"/><OMI>4</OMI><OMA><OMS cd=\"arith1\" name=\"power\"/><OMV name=\"x\"/><OMI>3</OMI></OMA></OMA></OMA><OMI>5</OMI></OMA>"}
+		};
+		
+		int cntfail = 0;
+		
+		for(int i = 0; i < tests.length; ++i) {
+			String s = OpenMathBase.parse(tests[i][0]).toXml();
+			if (!s.equals(tests[i][1])) {
+				System.out.println("testPrec4[" + i + "]: ");
+				System.out.println("in:        " + tests[i][0]);
+				System.out.println("found:     " + s);
+				System.out.println("should be: " + tests[i][1]);
+				++cntfail;
+				continue;
+			}
+		}
+
+		if (cntfail != 0) throw new RuntimeException(String.format("testPrec4 had %d failures", cntfail));
+	}
 
 
 	/* Testing printing to and reading from files 

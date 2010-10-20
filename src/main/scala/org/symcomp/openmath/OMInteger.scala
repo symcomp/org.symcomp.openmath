@@ -18,7 +18,8 @@
 
 package org.symcomp.openmath;
 
-import java.math.BigInteger;
+import java.math.BigInteger
+import java.security.MessageDigest;
 import java.util.Map;
 import java.io.PrintStream;
 
@@ -64,6 +65,9 @@ case class OMInteger(bigIntValue:BigInteger) extends OpenMathBase {
 	 */
     def getStrValueHex():String = OMInteger.toBase16(getIntValue());
 
+    override def subTreeHash():Tuple2[java.lang.Integer, String] = {
+        (1, OpenMathBase.b64md5String(bigIntValue.toString() + ":Integer"))
+    }
 
 }
 

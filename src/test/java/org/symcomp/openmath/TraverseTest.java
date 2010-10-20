@@ -7,12 +7,10 @@ import java.util.Set;
 
 public class TraverseTest {
 
-
-
     public void test1() throws OpenMathException {
         OMObject o = OpenMathBase.parsePopcorn("1+2").toOMObject();
         OMObject o2 = (OMObject) o.traverse(new OpenMathVisitor() {
-            public OpenMathBase visit(OMInteger om) { return new OMInteger(om.getIntValue().add(BigInteger.ONE)); }
+            public OpenMathBase visitInteger(OMInteger om) { return new OMInteger(om.getIntValue().add(BigInteger.ONE)); }
         });
         assert o2.toPopcorn().equals("2 + 3");
     }
@@ -20,8 +18,8 @@ public class TraverseTest {
     public void test2() throws OpenMathException {
         OMObject o = OpenMathBase.parsePopcorn("1+$a").toOMObject();
         OpenMathBase oo = o.traverse(new OpenMathVisitor() {
-            public OpenMathBase visit(OMInteger om) { return new OMInteger(om.getIntValue().add(new BigInteger("1"))); }
-            public OpenMathBase visit(OMVariable om) { return new OMVariable(om.getName()+"b"); }
+            public OpenMathBase visitInteger(OMInteger om) { return new OMInteger(om.getIntValue().add(new BigInteger("1"))); }
+            public OpenMathBase visitVariable(OMVariable om) { return new OMVariable(om.getName()+"b"); }
         });
         assert oo.toPopcorn().equals("2 + $ab");
     }
@@ -30,9 +28,9 @@ public class TraverseTest {
     public void test3() throws OpenMathException {
         OMObject o = OpenMathBase.parsePopcorn("sin(1+$a)").toOMObject();
         OpenMathBase oo = o.traverse(new OpenMathVisitor() {
-            public OpenMathBase visit(OMInteger om) { return new OMInteger(om.getIntValue().add(new BigInteger("1"))); }
-            public OpenMathBase visit(OMVariable om) { return new OMVariable(om.getName()+"b"); }
-            public OpenMathBase visit(OMSymbol om) { return new OMSymbol(om.getName(), om.getCd()); }
+            public OpenMathBase visitInteger(OMInteger om) { return new OMInteger(om.getIntValue().add(new BigInteger("1"))); }
+            public OpenMathBase visitVariable(OMVariable om) { return new OMVariable(om.getName()+"b"); }
+            public OpenMathBase visitSymbol(OMSymbol om) { return new OMSymbol(om.getName(), om.getCd()); }
         });
         assert oo.isObject();
         assert oo.toPopcorn().equals("sin.transc1(plus.arith1(2, $ab))");
@@ -41,7 +39,7 @@ public class TraverseTest {
 
     class SymbolExtractor extends OpenMathVisitor {
             public Set<OMSymbol> symbs = new HashSet();
-            public OpenMathBase visit(OMSymbol oms) {
+            public OpenMathBase visitSymbol(OMSymbol oms) {
                 symbs.add(oms);
                 return oms;
             }

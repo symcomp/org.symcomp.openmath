@@ -43,10 +43,16 @@ case class OMApply(head:OpenMathBase, params:Array[OpenMathBase]) extends OpenMa
         !this.params.zip(thatt.params).exists(t => (t._1 != t._2))
     }
 
-    override def traverse(visitor:OpenMathVisitor):OpenMathBase = {
-        val nhead = visitor.visit(head);
-        val nparams = params.map(_.traverse(visitor))
-        OMApply(nhead, nparams)
+    // override def traverse(visitor:OpenMathVisitor):OpenMathBase = {
+    //     visitor.visit(this);
+    // }
+
+    override def subTreeHash():Tuple2[java.lang.Integer, String] = {
+        val eparams : Array[Pair[Int, String]] = (params.map { p => p.subTreeHash }).asInstanceOf[Array[Pair[Int, String]]]
+        val depth = (eparams.map { p => p._1 }).max
+        val pstr = (eparams.map { p => p._2 + "::" }).foldLeft("Apply::" + params.length + "::")((a,b) => a+b)
+        (depth + 1,  OpenMathBase.b64md5String(pstr) )
     }
+
     
 }

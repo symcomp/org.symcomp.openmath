@@ -39,12 +39,11 @@ case class OMBind(symbol:OMSymbol, bvars:Array[OMVariable], param:OpenMathBase) 
         !this.bvars.zip(omv).exists(t => (t._1 != t._2))
  	}
 
-    override def traverse(visitor:OpenMathVisitor):OpenMathBase = {
-        val nsymbol = symbol.traverse(visitor).asInstanceOf[OMSymbol];
-        val nbvars = bvars.map(_.traverse(visitor).asInstanceOf[OMVariable])
-        val nparam = param.traverse(visitor);
-        OMBind(nsymbol, nbvars, nparam)
+    override def subTreeHash():Tuple2[java.lang.Integer, String] = {
+        val eparam = param.subTreeHash
+        val depth:Int = eparam._1.asInstanceOf[Int]
+        val vstr = (bvars.map { b => b.subTreeHash._2 + "::" }).foldLeft("Bvars::" + bvars.length + "::")((a,b) => a+b)
+        (depth + 1,  OpenMathBase.b64md5String(eparam + ":Param--" + vstr + ":Binding") )
     }
-
 
 }

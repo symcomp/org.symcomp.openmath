@@ -32,4 +32,8 @@ case class OMBinary(value:Array[Byte]) extends OpenMathBase {
  		java.util.Arrays.equals(value, b.value);
  	}
 
+    def subTreeHash():Tuple2[java.lang.Integer, String] = {
+        (1,  OpenMathBase.b64md5String(OpenMathBase.b64md5String(value) + ":Binary") )
+    }
+
 }

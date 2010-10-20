@@ -20,4 +20,9 @@ package org.symcomp.openmath
 
 abstract class OMContainer extends OpenMathBase {
     def toOpenMath:OpenMathBase
+
+    def subTreeHash():Tuple2[java.lang.Integer, String] = {
+        (1,  OpenMathBase.b64md5String(this.toString()+":CONTAINER") )
+    }
+
 }

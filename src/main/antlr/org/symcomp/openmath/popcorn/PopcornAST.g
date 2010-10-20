@@ -66,13 +66,13 @@ orExpr		    : andExpr ('or'^ andExpr)* ;
 andExpr 	    : relExpr ('and'^ relExpr)* ;
 relExpr 	    : intervalExpr (('='^|'<'^|'<='^|'>'^|'>='^|'!='^|'<>'^|'~'^) intervalExpr)? ;
 intervalExpr	: addExpr ('..'^ addExpr)? ;
-addExpr		    : multExpr (('-'^|'+'^) multExpr)* ;
+addExpr		    : negExpr (('-'^|'+'^) negExpr)* ;
+negExpr			: unaryOp multExpr -> ^(PREFIX unaryOp multExpr)
+					| multExpr;
 multExpr 	    : powerExpr (('/'^|'*'^) powerExpr)* ;
 powerExpr 	  : complexExpr ('^'^ complexExpr)? ;
 complexExpr	  : rationalExpr ('|'^ rationalExpr)? ;
-rationalExpr 	: negExpr ('//'^ negExpr)? ;
-negExpr 	    : unaryOp compExpr -> ^(PREFIX unaryOp compExpr)
-			        | compExpr;
+rationalExpr 	: compExpr ('//'^ compExpr)? ;
 compExpr	    : (anchor '(')				=> call
 			        | (anchor '!' '(') 			=> ecall
 			        | (anchor '{') 				=> attribution
@@ -111,7 +111,7 @@ paraExpr 	    : '('! expr ')'! ;
 ifExpr		    : 'if'^ c=expr 'then'! expr 'else'! expr 'endif'! ;
 whileExpr	    : 'while'^ expr 'do'! expr 'endwhile'! ;
 
-unaryOp		    : '-' | 'not';
+unaryOp		    : '-';
 
 ID			      : (('a'..'z'|'A'..'Z'|'_')('a'..'z'|'A'..'Z'|'0'..'9'|'_')* 
               | ('\'' (~'\'')* '\''))

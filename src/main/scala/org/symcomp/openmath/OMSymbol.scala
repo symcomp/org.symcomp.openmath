@@ -16,7 +16,9 @@
 //  limitations under the License.
 //---------------------------------------------------------------------------
 
-package org.symcomp.openmath;
+package org.symcomp.openmath
+
+import java.math.BigInteger;
 
 /**
  * Representing the OpenMath symbol node <tt>&lt;OMS ... /&gt;</tt> 
@@ -37,5 +39,9 @@ case class OMSymbol(cd:String, name:String) extends OpenMathBase {
             this.sameAttributes(s) && this.name == s.getName() && this.cd == s.getCd()
         }
     }
+
+  override def subTreeHash():Tuple2[java.lang.Integer, String] = {
+    (1, OpenMathBase.b64md5String(name + "." + cd + ":Symbol") )
+  }
 
 }

@@ -55,7 +55,6 @@ expr returns [Object value]
 		| ^('|'   t1=expr t2=expr) 	{ $value = PopcornHelper.apply("complex1", "complex_cartesian", $t1.value, $t2.value); }
 		| ^('+'   p1=expr p2=expr) 	{ $value = PopcornHelper.applyFlat("arith1", "plus", $p1.value, $p2.value); } 
 		| ^('//'  u1=expr u2=expr) 	{ $value = PopcornHelper.apply("nums1", "rational", $u1.value, $u2.value); }
-		| ^('not' v1=expr)		{ $value = PopcornHelper.apply("logic1", "not", $v1.value); } 
 		| ^('..'  w1=expr w2=expr) 	{ $value = PopcornHelper.apply("interval1", "interval", $w1.value, $w2.value); }
 		| ^(','   x1=expr x2=expr)	{ $value = PopcornHelper.flatten($x1.value, $x2.value); } 
 		| ^('('   y1=expr y2=expr)	{ $value = PopcornHelper.apply((OpenMathBase) $y1.value, $y2.value); }

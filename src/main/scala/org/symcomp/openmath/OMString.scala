@@ -18,6 +18,8 @@
 
 package org.symcomp.openmath
 
+import java.math.BigInteger
+
 case class OMString(value:String) extends OpenMathBase {
 
     def getValue():String = value
@@ -26,6 +28,11 @@ case class OMString(value:String) extends OpenMathBase {
         if (!that.isInstanceOf[OMString]) return false
         val s = that.asInstanceOf[OMString]
         this.sameAttributes(s) && (this.value == s.value)
-    }
+  }
+
+  override def subTreeHash():Tuple2[java.lang.Integer, String] = {
+    (1, OpenMathBase.b64md5String(value + ":String") )
+  }
+
 
 }

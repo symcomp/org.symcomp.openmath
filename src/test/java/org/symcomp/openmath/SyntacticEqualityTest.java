@@ -27,6 +27,7 @@ public class SyntacticEqualityTest {
     public void testSyntacticalDifferences4() { assert testEquality("<OMS cd='muff' name='puff' />", "<OMS name='puff' cd='muff' />"); }
     public void testSyntacticalDifferences5() { assert !testEquality("<OMS cd='mupf' name='puff' />", "<OMS name='puff' cd='muff' />"); }
     public void testSyntacticalDifferences6() { assert !testEquality("<OMS cd='muff' name='pufff' />", "<OMS name='puff' cd='muff' />"); }
+    public void testSyntacticalDifferences7() { assert testEquality("<OMF dec='1.1' />", "<OMF hex='3ff199999999999a'/>"); }
     public void testSyntacticalDifferences10() { assert testEquality(
             "<OMATTR><OMATP><OMS cd='cd1' name='nam1'/><OMI>1</OMI> </OMATP><OMSTR>Muff</OMSTR> </OMATTR>",
             "<OMATTR><OMATP><OMS name='nam1' cd='cd1' /><OMI> 1</OMI></OMATP><OMSTR>Muff</OMSTR></OMATTR>"); }

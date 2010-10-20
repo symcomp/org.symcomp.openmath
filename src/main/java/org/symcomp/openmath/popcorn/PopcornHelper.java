@@ -600,6 +600,10 @@ public class PopcornHelper {
       translate.put("grad", new OMSymbol("veccalc1", "grad"));
     }
 
+	public static void addTranslation(String s, OMSymbol o) {
+		translate.put(s, o);
+	}
+
     public static OpenMathBase[] flatten(Object o1, Object o2) {
         OpenMathBase[] result;
         if (o1 instanceof OpenMathBase && o2 instanceof OpenMathBase) {

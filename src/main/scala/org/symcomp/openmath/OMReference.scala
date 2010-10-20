@@ -18,6 +18,8 @@
 
 package org.symcomp.openmath
 
+import java.math.BigInteger
+
 case class OMReference(href:String) extends OpenMathBase {
 
     def getHref():String = href
@@ -27,5 +29,9 @@ case class OMReference(href:String) extends OpenMathBase {
         val s = that.asInstanceOf[OMReference]
         this.sameAttributes(s) && (this.href == s.href)
     }
+
+  override def subTreeHash():Tuple2[java.lang.Integer, String] = {
+    (1, OpenMathBase.b64md5String(href + ":Reference") )
+  }
 
 }

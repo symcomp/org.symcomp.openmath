@@ -16,25 +16,35 @@
 //  limitations under the License.
 //---------------------------------------------------------------------------
 
-package org.symcomp.openmath
+package org.symcomp.openmath;
 
-import java.math.BigInteger;
-
+import java.util.*;
+import java.io.*;
+import java.lang.reflect.Method;
+import java.lang.reflect.Constructor;
 /**
- * Representing the OpenMath variable node <tt>&lt;OMV ... /&gt;</tt>
+ * This is really ONLY to solve a type probelm with the Mathematica-Java link.
  */
-case class OMVariable(name:String) extends OpenMathBase {
+public class OMList {
 
-    def getName():String = name
+  LinkedList<OpenMathBase> list;
 
- 	override def equals(that:Any):Boolean = {
-        if (!that.isInstanceOf[OMVariable]) return false;
-        val v = that.asInstanceOf[OMVariable];
-        this.sameAttributes(v) && (this.name == v.name);
-    }
-
-  override def subTreeHash():Tuple2[java.lang.Integer, String] = {
-    (1, OpenMathBase.b64md5String(name + ":Variable"))
+  public OMList() {
+    list = new LinkedList<OpenMathBase>();
   }
 
+  public OMList(Object om) {
+    list = new LinkedList<OpenMathBase>();
+    list.add((OpenMathBase) om);
+  }
+
+  public OMList add(Object om) {
+    list.add((OpenMathBase) om);
+    return this;
+  }
+
+  public OpenMathBase[] array() {
+    OpenMathBase[] a = new OpenMathBase[list.size()];
+    return list.toArray(a);
+  }
 }

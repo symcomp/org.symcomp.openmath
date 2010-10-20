@@ -19,14 +19,14 @@
 package org.symcomp.openmath;
 
 /**
- * Representing the OpenMath flot node <tt>&lt;OMF ... /&gt;</tt>
+ * Representing the OpenMath float node <tt>&lt;OMF ... /&gt;</tt>
  */
 case class OMFloat(dec:Double) extends OpenMathBase {
 
     def this(bts:Array[Char]) = this(OMFloat.bytes2double(bts))
-    def this(hex:String) = this(hex.toArray[Char])
+    def this(hex:String) = this(OMFloat.hexStringToCharArray(hex))
 
-    def getHex():String = new String(OMFloat.double2bytes(dec))
+    def getHex():String = OMFloat.charArrayToHexString(OMFloat.double2bytes(dec))
     def getDec():java.lang.Double = new java.lang.Double(dec)
     def getBytes():Array[Char] = OMFloat.double2bytes(dec)
     
@@ -38,10 +38,31 @@ case class OMFloat(dec:Double) extends OpenMathBase {
         this.dec == f.dec
  	}
 
+  def subTreeHash():Tuple2[java.lang.Integer, String] = {
+    (1,  OpenMathBase.b64md5String(getHex + ":Float") )
+  }
+
 }
 
 
 object OMFloat {
+
+	val hexchars:Array[String] = Array("0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
+	     "a", "b", "c", "d", "e", "f")
+	val hexToInt = scala.collection.immutable.Map(
+	    '0' -> 0,  '1' -> 1,
+	    '2' -> 2,  '3' -> 3,
+	    '4' -> 4,  '5' -> 5,
+	    '6' -> 6,  '7' -> 7,
+	    '8' -> 8,  '9' -> 9,
+	    'a' -> 10, 'b' -> 11,
+	    'c' -> 12, 'd' -> 13,
+	    'e' -> 14, 'f' -> 15,
+	    'A' -> 10, 'B' -> 11,
+	    'C' -> 12, 'D' -> 13,
+	    'E' -> 14, 'F' -> 15
+	)
+
     /**
      * Converts an IEEE bytes-representation where the first byte
      * is most significant into a double. This is needed to deal with
@@ -78,4 +99,23 @@ object OMFloat {
             (l & 0xff).asInstanceOf[Char]
         )
     }
+
+	def charArrayToHexString(str:Array[Char]):String = {
+		val s = new StringBuffer();
+	    for(i:Int <- 0 to str.length-1) {
+			s.append(hexchars.apply(str(i) / 16))
+			s.append(hexchars.apply(str(i) % 16))
+		}
+	    s.toString()
+	}
+
+	def hexStringToCharArray(str:String):Array[Char] = {
+		var r = Array[Char](0,0,0,0,0,0,0,0)
+        if(str.length != 16)
+            throw new RuntimeException("Couldn't parse Hex-Float, incorrect length.");
+		
+	    for(i:Int <- 0 to (str.length-1)/2) 
+			r(i) = (16*hexToInt(str.charAt(2*i)) + hexToInt(str.charAt(2*i+1))).asInstanceOf[Char]
+		r
+	}
 }
